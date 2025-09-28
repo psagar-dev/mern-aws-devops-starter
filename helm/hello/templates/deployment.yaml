@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mern-microservice.fullname" . }}-backend
+  labels:
+    app: {{ include "mern-microservice.name" . }}-backend
+    tier: {{ include "mern-microservice.name" . }}-backend
+    environment: {{ .Values.environment }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "mern-microservice.name" . }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ include "mern-microservice.name" . }}-backend
+        tier: {{ include "mern-microservice.name" . }}-backend
+        environment: {{ .Values.environment }}
+    spec:
+      restartPolicy: {{ .Values.restartPolicy }}
+      containers:
+      - name: {{ include "mern-microservice.name" . }}-backend
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ required "containerPort is required!" .Values.containerPort | int }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.secretRefName }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}

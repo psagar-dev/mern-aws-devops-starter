@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mern-microservice.fullname" . }}-frontend
+  labels:
+    app: {{ include "mern-microservice.name" . }}-frontend
+    tier: {{ include "mern-microservice.name" . }}-frontend
+    environment: {{ .Values.environment }}
+spec:
+  selector:
+    app: {{ include "mern-microservice.name" . }}-frontend
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.targetPort }}
+  type: {{ .Values.service.type }}

@@ -1,0 +1,59 @@
+# The environment (e.g., production, staging, development)
+environment: production
+nameOverride: "mern-microservice-profile"
+fullnameOverride: "mern-microservice-profile"
+
+# Docker image settings
+image:
+  repository: securelooper/mern-microservices-profile
+  tag: latest # Change to a specific version/tag in production!
+  pullPolicy: Always
+
+# Number of backend pods to run
+replicaCount: 2
+
+# Pod container settings
+containerPort: 3002
+restartPolicy: Always
+
+# Kubernetes Service for the backend
+service: 
+  type: LoadBalancer
+  port: 3002
+  targetPort: 3002
+  
+# Kubernetes Secret Reference (if you store secrets in K8s)
+secretRefName: profile-backend-secrets
+
+# Direct secrets (prefer using sealed-secrets or external secrets in production)
+secret:
+  port: MzAwMg==
+  mongoUrl: bW9uZ29kYjovL3Jvb3Q6cm9vdEAxOTIuMTY4LjMxLjEwMDoyNzAxNy9tZXJuLW1pY3Jvc2VydmljZXMtc3RhcnRlcj9hdXRoU291cmNlPWFkbWlu
+
+# Liveness probe for backend health
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3002
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 2
+
+# Readiness probe for backend readiness
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3002
+  initialDelaySeconds: 40
+  periodSeconds: 5
+  failureThreshold: 3
+  timeoutSeconds: 2
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "200m"
+    memory: "256Mi"
